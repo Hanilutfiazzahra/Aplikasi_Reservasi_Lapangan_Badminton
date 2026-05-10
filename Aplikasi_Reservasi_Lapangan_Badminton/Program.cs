@@ -4,6 +4,7 @@ using System.Text;
 using Aplikasi_Reservasi_Lapangan_Badminton.Entities; 
 using Aplikasi_Reservasi_Lapangan_Badminton.Services;
 using Aplikasi_Reservasi_Lapangan_Badminton.Reservasi;
+using Aplikasi_Reservasi_Lapangan_Badminton.Auth;
 
 namespace Aplikasi_Reservasi_Lapangan_Badminton
 {
@@ -11,6 +12,37 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
     {
         static void Main(string[] args)
         {
+
+            var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddControllers();
+            builder.Services.Configure<AuthSettings>(
+                builder.Configuration.GetSection("AuthSettings"));
+            builder.Services.AddSingleton<AuthService>();
+            var app = builder.Build();
+            app.UseHttpsRedirection();
+            app.MapControllers();
+
+            var authService = app.Services.GetRequiredService<AuthService>();
+
+            try
+            {
+                authService.Register(new RegisterRequest
+                {
+                    Name = "Admin",
+                    Email = "admin@gmail.com",
+                    Password = "password123",
+                    Role = "Admin"
+                });
+
+                Console.WriteLine("Akun default admin berhasil dibuat");
+            }
+            catch(ArgumentException ex)
+            {
+                Console.WriteLine("Seed akun admin dilewati: " + ex.Message);
+            }
+            app.Run();
+            
 
             List<Lapangan> daftarLapangan
                 = new List<Lapangan>();
