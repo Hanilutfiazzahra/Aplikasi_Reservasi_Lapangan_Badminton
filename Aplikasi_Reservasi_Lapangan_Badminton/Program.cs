@@ -4,6 +4,7 @@ using System.Text;
 using Aplikasi_Reservasi_Lapangan_Badminton.Entities; 
 using Aplikasi_Reservasi_Lapangan_Badminton.Services;
 using Aplikasi_Reservasi_Lapangan_Badminton.Reservasi;
+using Aplikasi_Reservasi_Lapangan_Badminton.Ravie;
 
 namespace Aplikasi_Reservasi_Lapangan_Badminton
 {
@@ -209,6 +210,13 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
             Console.WriteLine("\n==============================");
             Console.WriteLine("Tekan Enter untuk keluar...");
             Console.ReadLine();
+
+            ConfigService config = new();
+            HargaService harga = new(config);
+
+            decimal hargaFinal = harga.HitungHarga(100000);
+
+            Console.WriteLine($"Total Harga : {hargaFinal}");
         }
     }
 }
