@@ -2,16 +2,15 @@
 using System.Collections.Generic; 
 using System.Text; 
 
-using Aplikasi_Reservasi_Lapangan_Badminton.Entities;
-using Aplikasi_Reservasi_Lapangan_Badminton.Services; 
 using Aplikasi_Reservasi_Lapangan_Badminton.Entities; 
 using Aplikasi_Reservasi_Lapangan_Badminton.Services;
 using Aplikasi_Reservasi_Lapangan_Badminton.Reservasi;
 
+
 namespace Aplikasi_Reservasi_Lapangan_Badminton
 {
-    class Program
-    {
+    class Program{
+
         static void Main(string[] args)
         {
 
@@ -156,6 +155,37 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
                     durasi
                 );
 
+                //runtime config
+                ConfigService config = new ConfigService();
+                HargaService hargaService = new HargaService(config);
+
+                decimal hargaAwal = (decimal)(lapanganDipilih.hargaPerJam * durasi);
+
+                decimal hargaFinal = hargaService.HitungHarga(hargaAwal);
+
+                Console.WriteLine("\n=== RUNTIME CONFIG ===");
+                Console.WriteLine("Harga Awal  : Rp" + hargaAwal);
+                Console.WriteLine("Harga Final : Rp" + hargaFinal);
+
+                //generic class
+                GenericRepository<Booking> bookingRepo =
+                new GenericRepository<Booking>();
+
+                bookingRepo.Add(booking1);
+
+                Console.WriteLine("\n=== DATA BOOKING (GENERIC) ===");
+
+                foreach (var booking in bookingRepo.GetAll())
+                {
+                    Console.WriteLine(
+                        booking.namaCustomer +
+                        " | " +
+                        booking.lapangan.nama +
+                        " | " +
+                        booking.status
+                    );
+                }
+
                 // 6. Hitung Pembayaran
                 PaymentService paymentService = new PaymentService();
                 double total = paymentService.hitungTotal(booking1);
@@ -208,10 +238,6 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
                 // Menangkap error jika input nomor lapangan atau durasi bukan angka
                 Console.WriteLine("\n[ERROR]: " + ex.Message);
             }
-
-            Console.WriteLine("\n==============================");
-            Console.WriteLine("Tekan Enter untuk keluar...");
-            Console.ReadLine();
         }
     }
 }
