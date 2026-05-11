@@ -1,3 +1,4 @@
+
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Aplikasi_Reservasi_Lapangan_Badminton.Entities;
 using Aplikasi_Reservasi_Lapangan_Badminton.Reservasi;
@@ -99,5 +100,15 @@ namespace Fitur_Filter_Jadwal_Test
                 total
             );
         }
+    }
+}
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Fitur_Filter_Jadwal_Test
+{
+    internal class BookingTest
+    {
     }
 }

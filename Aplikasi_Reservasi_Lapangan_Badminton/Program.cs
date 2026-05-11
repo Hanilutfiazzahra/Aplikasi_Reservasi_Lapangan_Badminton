@@ -1,8 +1,15 @@
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Aplikasi_Reservasi_Lapangan_Badminton.Entities;
+﻿using System; 
+using System.Collections.Generic; 
+using System.Text;
+
+using Microsoft.Extensions.Options;
+using Aplikasi_Reservasi_Lapangan_Badminton.Entities; 
 using Aplikasi_Reservasi_Lapangan_Badminton.Services;
 using Aplikasi_Reservasi_Lapangan_Badminton.Reservasi;
 using Aplikasi_Reservasi_Lapangan_Badminton.Ravie;
@@ -41,6 +48,8 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
             {
                 // Jika akun admin sudah ada, program tetap lanjut
             }
+
+            AuthResponse loginResult = JalankanAuth(authService);
 
             AuthResponse loginResult = JalankanAuth(authService);
 
