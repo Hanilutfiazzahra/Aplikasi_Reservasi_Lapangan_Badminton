@@ -1,3 +1,9 @@
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Microsoft.Extensions.Options;
+using Aplikasi_Reservasi_Lapangan_Badminton.Entities;
 ﻿using System; 
 using System.Collections.Generic; 
 using System.Text;
@@ -45,6 +51,8 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
 
             AuthResponse loginResult = JalankanAuth(authService);
 
+            AuthResponse loginResult = JalankanAuth(authService);
+
             if (loginResult.Role == "Admin")
             {
                 TampilkanMenuAdmin();
@@ -87,7 +95,6 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
                 );
 
             daftarLapangan.Add(lap1);
-
             daftarLapangan.Add(lap2);
 
             ScheduleService scheduleService = new ScheduleService();
@@ -95,8 +102,7 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
             // filter
             FilterService filterService = new FilterService();
 
-            foreach (Lapangan lapangan
-                in daftarLapangan)
+            foreach (Lapangan lapangan in daftarLapangan)
             {
                 scheduleService.generateJadwal(lapangan);
             }

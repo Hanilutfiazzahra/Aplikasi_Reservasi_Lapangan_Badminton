@@ -1,0 +1,171 @@
+﻿@baseUrl = https://localhost:62240
+
+### ======================================================
+### AUTH FLOW TESTING
+### Sistem Reservasi Lapangan Badminton
+###
+### Simulasi alur:
+### 1 = Admin
+### 2 = Customer
+###
+### Catatan:
+### Karena sistem menggunakan API, pilihan angka user
+### disimulasikan melalui endpoint yang sesuai.
+### ======================================================
+
+
+### ======================================================
+### 1. PROGRAM AWAL MENAMPILKAN 2 MACAM ROLE
+### User melihat pilihan:
+### 1. Admin
+### 2. Customer
+### ======================================================
+
+GET {{baseUrl}}/api/auth/roles
+
+
+### ======================================================
+### 2. USER MEMILIH ROLE ADMIN
+### Simulasi: user memilih angka 1.
+### Setelah memilih Admin, sistem menampilkan input login admin.
+###
+### Input benar:
+### email    : admin@gmail.com
+### password : password123
+### ======================================================
+
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "password123"
+}
+
+
+### ======================================================
+### 3. ADMIN MEMASUKKAN DATA SALAH
+### Jika input salah, sistem menampilkan error message.
+### Setelah itu user harus memasukkan data lagi.
+###
+### Contoh: password admin salah.
+### ======================================================
+
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "salah123"
+}
+
+
+### ======================================================
+### 4. JIKA ADMIN LOGIN BENAR
+### Sistem menampilkan menu admin:
+### 1. Lihat data reservasi
+### 2. Ubah data reservasi
+### 3. Hapus data reservasi
+###
+### Catatan:
+### Bagian ini hanya menampilkan pilihan menu.
+### Fungsi reservasinya tidak dijalankan di modul Auth.
+### ======================================================
+
+GET {{baseUrl}}/api/auth/admin-menu
+
+
+### ======================================================
+### 5. USER MEMILIH ROLE CUSTOMER
+### Simulasi: user memilih angka 2.
+### Sistem menampilkan menu customer:
+### 1. Register
+### 2. Login
+### ======================================================
+
+GET {{baseUrl}}/api/auth/customer-menu
+
+
+### ======================================================
+### 6. CUSTOMER MEMILIH REGISTER
+### Simulasi: user customer memilih angka 1.
+### Sistem menampilkan input register.
+###
+### Input benar:
+### name     : Budi
+### email    : budi@gmail.com
+### password : password123
+### ======================================================
+
+POST {{baseUrl}}/api/auth/register/customer
+Content-Type: application/json
+
+{
+  "name": "Budi",
+  "email": "budi@gmail.com",
+  "password": "password123"
+}
+
+
+### ======================================================
+### 7. CUSTOMER REGISTER DENGAN INPUT SALAH
+### Jika input salah, sistem menampilkan error message.
+### Setelah itu user harus input ulang.
+###
+### Contoh: password kurang dari minimal karakter.
+### ======================================================
+
+POST {{baseUrl}}/api/auth/register/customer
+Content-Type: application/json
+
+{
+  "name": "Ani",
+  "email": "ani@gmail.com",
+  "password": "123"
+}
+
+
+### ======================================================
+### 8. CUSTOMER MEMILIH LOGIN
+### Simulasi: user customer memilih angka 2.
+### Sistem menampilkan input login.
+###
+### Input benar:
+### email    : budi@gmail.com
+### password : password123
+### ======================================================
+
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "budi@gmail.com",
+  "password": "password123"
+}
+
+
+### ======================================================
+### 9. CUSTOMER LOGIN DENGAN INPUT SALAH
+### Jika input salah, sistem menampilkan error message.
+### Setelah itu user harus input ulang.
+###
+### Contoh: password salah.
+### ======================================================
+
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "budi@gmail.com",
+  "password": "salah123"
+}
+
+
+### ======================================================
+### 10. JIKA CUSTOMER LOGIN BENAR
+### Sistem menampilkan pilihan jam tersedia.
+### Bagian ini hanya menampilkan pilihan jam,
+### belum menjalankan fungsi booking.
+### ======================================================
+
+GET {{baseUrl}}/api/auth/available-slots
