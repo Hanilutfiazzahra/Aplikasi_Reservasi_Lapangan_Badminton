@@ -7,6 +7,7 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton.Services
     {
         public List<T> FilterData<T>(List<T> data, Func<T, bool> kondisi)
         {
+            //Implementasi design by contract(DbC)
             if (data == null)
             {
                 throw new ArgumentNullException( "Data tidak boleh null");

@@ -1,21 +1,13 @@
-<<<<<<< Updated upstream
+
 ﻿using System; 
 using System.Collections.Generic; 
-using System.Text; 
-using Aplikasi_Reservasi_Lapangan_Badminton.Entities; 
-using Aplikasi_Reservasi_Lapangan_Badminton.Services;
-using Aplikasi_Reservasi_Lapangan_Badminton.Reservasi;
-=======
-﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Options;
-using Aplikasi_Reservasi_Lapangan_Badminton.Entities;
+using Aplikasi_Reservasi_Lapangan_Badminton.Entities; 
 using Aplikasi_Reservasi_Lapangan_Badminton.Services;
 using Aplikasi_Reservasi_Lapangan_Badminton.Reservasi;
 using Aplikasi_Reservasi_Lapangan_Badminton.Ravie;
 using Aplikasi_Reservasi_Lapangan_Badminton.Auth;
->>>>>>> Stashed changes
 
 namespace Aplikasi_Reservasi_Lapangan_Badminton
 {
@@ -98,8 +90,7 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
 
             daftarLapangan.Add(lap2);
 
-            ScheduleService scheduleService
-                = new ScheduleService();
+            ScheduleService scheduleService = new ScheduleService();
 
             // filter
             FilterService filterService = new FilterService();
@@ -210,8 +201,6 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
                     durasi
                 );
 
-<<<<<<< Updated upstream
-=======
                 // runtime config
                 ConfigService config = new ConfigService();
                 HargaService hargaService = new HargaService(config);
@@ -243,7 +232,6 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
                     );
                 }
 
->>>>>>> Stashed changes
                 // 6. Hitung Pembayaran
                 PaymentService paymentService = new PaymentService();
                 double total = paymentService.hitungTotal(booking1);
@@ -294,10 +282,6 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
             {
                 Console.WriteLine("\n[ERROR]: " + ex.Message);
             }
-
-            Console.WriteLine("\n==============================");
-            Console.WriteLine("Tekan Enter untuk keluar...");
-            Console.ReadLine();
         }
 
         static AuthResponse JalankanAuth(AuthService authService)
@@ -419,7 +403,7 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
             Console.WriteLine();
             Console.WriteLine("Tekan Enter untuk keluar...");
             Console.ReadLine();
-        }
+        }     
 
         static AuthResponse MenuCustomer(AuthService authService)
         {
