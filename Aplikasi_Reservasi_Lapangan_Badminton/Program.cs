@@ -1,7 +1,7 @@
 ﻿using System; 
 using System.Collections.Generic; 
 using System.Text; 
-using Aplikasi_Reservasi_Lapangan_Badminton.Entities; 
+using Aplikasi_Reservasi_Lapangan_Badminton.Entities;
 using Aplikasi_Reservasi_Lapangan_Badminton.Services; 
 
 namespace Aplikasi_Reservasi_Lapangan_Badminton
