@@ -1,18 +1,64 @@
-﻿using System; 
-using System.Collections.Generic; 
-using System.Text; 
-
-using Aplikasi_Reservasi_Lapangan_Badminton.Entities; 
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Microsoft.Extensions.Options;
+using Aplikasi_Reservasi_Lapangan_Badminton.Entities;
 using Aplikasi_Reservasi_Lapangan_Badminton.Services;
 using Aplikasi_Reservasi_Lapangan_Badminton.Reservasi;
-
+using Aplikasi_Reservasi_Lapangan_Badminton.Ravie;
+using Aplikasi_Reservasi_Lapangan_Badminton.Auth;
 
 namespace Aplikasi_Reservasi_Lapangan_Badminton
 {
-    class Program{
-
+    class Program
+    {
         static void Main(string[] args)
         {
+            // ==============================
+            // AUTH SETUP
+            // ==============================
+            var authSettings = Options.Create(new AuthSettings
+            {
+                PasswordMinLength = 8,
+                TokenExpirationMinutes = 60,
+                AllowedRoles = new[] { "Admin", "Customer" }
+            });
+
+            AuthService authService = new AuthService(authSettings);
+
+            // Akun admin default
+            try
+            {
+                authService.Register(new RegisterRequest
+                {
+                    Name = "Admin",
+                    Email = "admin@gmail.com",
+                    Password = "password123",
+                    Role = "Admin"
+                });
+            }
+            catch
+            {
+                // Jika akun admin sudah ada, program tetap lanjut
+            }
+
+            AuthResponse loginResult = JalankanAuth(authService);
+
+            if (loginResult.Role == "Admin")
+            {
+                TampilkanMenuAdmin();
+                return;
+            }
+
+            if (loginResult.Role == "Customer")
+            {
+                Console.Clear();
+            }
+
+            // ==============================
+            // PROGRAM UTAMA CUSTOMER
+            // Hanya muncul setelah customer berhasil login
+            // ==============================
 
             List<Lapangan> daftarLapangan
                 = new List<Lapangan>();
@@ -46,7 +92,7 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
             ScheduleService scheduleService
                 = new ScheduleService();
 
-            //filter
+            // filter
             FilterService filterService = new FilterService();
 
             foreach (Lapangan lapangan
@@ -61,15 +107,15 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
 
             Console.WriteLine();
 
-            for (int i = 0; i < daftarLapangan.Count;i++)
+            for (int i = 0; i < daftarLapangan.Count; i++)
             {
                 Lapangan lap = daftarLapangan[i];
 
-                Console.WriteLine ((i + 1) + ". " + lap.getDetail());
+                Console.WriteLine((i + 1) + ". " + lap.getDetail());
 
                 foreach (var item in lap.jadwal)
                 {
-                    Console.WriteLine( "   " + item.Key + " " + (item.Value? "(Booked)" : "(Tersedia)"));
+                    Console.WriteLine("   " + item.Key + " " + (item.Value ? "(Booked)" : "(Tersedia)"));
                 }
 
                 Console.WriteLine();
@@ -77,7 +123,7 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
 
             Console.WriteLine("Data lapangan berhasil ditampilkan");
 
-            //filter
+            // filter
             Console.WriteLine();
             Console.WriteLine("=== FILTER JADWAL ===");
 
@@ -85,7 +131,7 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
 
             string inputJam = Console.ReadLine();
 
-            var hasilFilter = filterService.FilterData(daftarLapangan,l => l.jadwal.ContainsKey(inputJam));
+            var hasilFilter = filterService.FilterData(daftarLapangan, l => l.jadwal.ContainsKey(inputJam));
 
             Console.WriteLine();
 
@@ -102,10 +148,10 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
             {
                 bool status = lapangan.jadwal[inputJam];
 
-                Console.WriteLine(lapangan.getDetail() + " | Status: " + ( status? "Booked": "Tersedia"));
+                Console.WriteLine(lapangan.getDetail() + " | Status: " + (status ? "Booked" : "Tersedia"));
             }
 
-            //Reservasi
+            // Reservasi
             Console.WriteLine("\n==============================");
             Console.WriteLine("    MENU BOOKING & PAYMENT    ");
             Console.WriteLine("==============================");
@@ -126,7 +172,7 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
                 Console.Write("Masukkan nomor lapangan : ");
                 int pilihLapangan = Convert.ToInt32(Console.ReadLine());
 
-                // Validasi index (Defensive Programming)
+                // Validasi index
                 if (pilihLapangan < 1 || pilihLapangan > daftarLapangan.Count)
                     throw new Exception("Nomor lapangan tidak tersedia!");
 
@@ -155,7 +201,7 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
                     durasi
                 );
 
-                //runtime config
+                // runtime config
                 ConfigService config = new ConfigService();
                 HargaService hargaService = new HargaService(config);
 
@@ -167,9 +213,9 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
                 Console.WriteLine("Harga Awal  : Rp" + hargaAwal);
                 Console.WriteLine("Harga Final : Rp" + hargaFinal);
 
-                //generic class
+                // generic class
                 GenericRepository<Booking> bookingRepo =
-                new GenericRepository<Booking>();
+                    new GenericRepository<Booking>();
 
                 bookingRepo.Add(booking1);
 
@@ -215,14 +261,13 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
 
                         foreach (var item in lap.jadwal)
                         {
-                            // Jika Value true, maka tampilkan Booked, jika false Tersedia
                             string statusTeks = item.Value ? "(Booked oleh " + namaCustomer + ")" : "(Tersedia)";
                             Console.WriteLine("   " + item.Key + " " + statusTeks);
                         }
+
                         Console.WriteLine();
                     }
 
-                    // Output
                     Console.WriteLine("\n=== UPDATE STATUS JADWAL ===");
                     Console.WriteLine("Jadwal " + jadwal + " di " + lapanganDipilih.nama + " sekarang: [BOOKED oleh " + namaCustomer + "]");
                 }
@@ -235,8 +280,251 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
             }
             catch (Exception ex)
             {
-                // Menangkap error jika input nomor lapangan atau durasi bukan angka
                 Console.WriteLine("\n[ERROR]: " + ex.Message);
+            }
+        }
+
+        static AuthResponse JalankanAuth(AuthService authService)
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("=================================");
+                Console.WriteLine(" SISTEM RESERVASI LAPANGAN");
+                Console.WriteLine("=================================");
+                Console.WriteLine("Silakan pilih role:");
+                Console.WriteLine("1. Admin");
+                Console.WriteLine("2. Customer");
+                Console.Write("Masukkan pilihan role: ");
+
+                string pilihanRole = Console.ReadLine();
+
+                if (pilihanRole == "1")
+                {
+                    return LoginAdmin(authService);
+                }
+                else if (pilihanRole == "2")
+                {
+                    return MenuCustomer(authService);
+                }
+                else
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("[ERROR] Pilihan tidak valid. Masukkan 1 untuk Admin atau 2 untuk Customer.");
+                    Console.WriteLine("Tekan Enter untuk mencoba lagi...");
+                    Console.ReadLine();
+                }
+            }
+        }
+
+        static AuthResponse LoginAdmin(AuthService authService)
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("=================================");
+                Console.WriteLine(" LOGIN ADMIN");
+                Console.WriteLine("=================================");
+
+                Console.Write("Email    : ");
+                string email = Console.ReadLine();
+
+                Console.Write("Password : ");
+                string password = Console.ReadLine();
+
+                try
+                {
+                    AuthResponse result = authService.Login(new LoginRequest
+                    {
+                        Email = email,
+                        Password = password
+                    });
+
+                    if (result.Role != "Admin")
+                    {
+                        throw new Exception("Akun ini bukan admin.");
+                    }
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("[ERROR] " + ex.Message);
+                    Console.WriteLine("Silakan masukkan data admin lagi.");
+                    Console.WriteLine("Tekan Enter untuk mencoba lagi...");
+                    Console.ReadLine();
+                }
+            }
+        }
+
+        static void TampilkanMenuAdmin()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("=================================");
+                Console.WriteLine(" MENU ADMIN");
+                Console.WriteLine("=================================");
+                Console.WriteLine("1. Lihat data reservasi");
+                Console.WriteLine("2. Ubah data reservasi");
+                Console.WriteLine("3. Hapus data reservasi");
+                Console.Write("Pilih menu admin: ");
+
+                string pilihan = Console.ReadLine();
+
+                if (pilihan == "1")
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Menu Lihat Data Reservasi dipilih.");
+                    break;
+                }
+                else if (pilihan == "2")
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Menu Ubah Data Reservasi dipilih.");
+                    break;
+                }
+                else if (pilihan == "3")
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Menu Hapus Data Reservasi dipilih.");
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("[ERROR] Pilihan menu admin tidak valid.");
+                    Console.WriteLine("Tekan Enter untuk mencoba lagi...");
+                    Console.ReadLine();
+                }
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Tekan Enter untuk keluar...");
+            Console.ReadLine();
+        }
+
+        static AuthResponse MenuCustomer(AuthService authService)
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("=================================");
+                Console.WriteLine(" MENU CUSTOMER");
+                Console.WriteLine("=================================");
+                Console.WriteLine("1. Register");
+                Console.WriteLine("2. Login");
+                Console.Write("Masukkan pilihan: ");
+
+                string pilihan = Console.ReadLine();
+
+                if (pilihan == "1")
+                {
+                    RegisterCustomer(authService);
+
+                    Console.WriteLine();
+                    Console.WriteLine("Silakan login menggunakan akun customer yang baru dibuat.");
+                    Console.WriteLine("Tekan Enter untuk lanjut ke menu login...");
+                    Console.ReadLine();
+
+                    return LoginCustomer(authService);
+                }
+                else if (pilihan == "2")
+                {
+                    return LoginCustomer(authService);
+                }
+                else
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("[ERROR] Pilihan tidak valid. Masukkan 1 untuk Register atau 2 untuk Login.");
+                    Console.WriteLine("Tekan Enter untuk mencoba lagi...");
+                    Console.ReadLine();
+                }
+            }
+        }
+
+        static void RegisterCustomer(AuthService authService)
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("=================================");
+                Console.WriteLine(" REGISTER CUSTOMER");
+                Console.WriteLine("=================================");
+
+                Console.Write("Nama     : ");
+                string name = Console.ReadLine();
+
+                Console.Write("Email    : ");
+                string email = Console.ReadLine();
+
+                Console.Write("Password : ");
+                string password = Console.ReadLine();
+
+                try
+                {
+                    authService.Register(new RegisterRequest
+                    {
+                        Name = name,
+                        Email = email,
+                        Password = password,
+                        Role = "Customer"
+                    });
+
+                    Console.WriteLine();
+                    Console.WriteLine("Register customer berhasil.");
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("[ERROR] " + ex.Message);
+                    Console.WriteLine("Silakan masukkan data register lagi.");
+                    Console.WriteLine("Tekan Enter untuk mencoba lagi...");
+                    Console.ReadLine();
+                }
+            }
+        }
+
+        static AuthResponse LoginCustomer(AuthService authService)
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("=================================");
+                Console.WriteLine(" LOGIN CUSTOMER");
+                Console.WriteLine("=================================");
+
+                Console.Write("Email    : ");
+                string email = Console.ReadLine();
+
+                Console.Write("Password : ");
+                string password = Console.ReadLine();
+
+                try
+                {
+                    AuthResponse result = authService.Login(new LoginRequest
+                    {
+                        Email = email,
+                        Password = password
+                    });
+
+                    if (result.Role != "Customer")
+                    {
+                        throw new Exception("Akun ini bukan customer.");
+                    }
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("[ERROR] " + ex.Message);
+                    Console.WriteLine("Silakan masukkan data login lagi.");
+                    Console.WriteLine("Tekan Enter untuk mencoba lagi...");
+                    Console.ReadLine();
+                }
             }
         }
     }
