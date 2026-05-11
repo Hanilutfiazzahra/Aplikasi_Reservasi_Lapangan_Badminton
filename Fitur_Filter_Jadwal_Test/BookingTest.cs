@@ -4,7 +4,7 @@ using Aplikasi_Reservasi_Lapangan_Badminton.Reservasi;
 using Aplikasi_Reservasi_Lapangan_Badminton.Services;
 using System;
 
-namespace BookingTest
+namespace Fitur_Filter_Jadwal_Test
 {
     [TestClass]
     public class BookingTest

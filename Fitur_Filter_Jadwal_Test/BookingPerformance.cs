@@ -4,7 +4,7 @@ using Aplikasi_Reservasi_Lapangan_Badminton.Entities;
 using Aplikasi_Reservasi_Lapangan_Badminton.Reservasi;
 using Aplikasi_Reservasi_Lapangan_Badminton.Services;
 
-namespace Aplikasi_Reservasi_Lapangan_Badminton
+namespace Fitur_Filter_Jadwal_Test
 {
     public class BookingPerformance
     {

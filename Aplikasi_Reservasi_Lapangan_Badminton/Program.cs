@@ -1,9 +1,8 @@
-
-﻿using System; 
-using System.Collections.Generic; 
+using System;
+using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Options;
-using Aplikasi_Reservasi_Lapangan_Badminton.Entities; 
+using Aplikasi_Reservasi_Lapangan_Badminton.Entities;
 using Aplikasi_Reservasi_Lapangan_Badminton.Services;
 using Aplikasi_Reservasi_Lapangan_Badminton.Reservasi;
 using Aplikasi_Reservasi_Lapangan_Badminton.Ravie;
@@ -87,7 +86,6 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
                 );
 
             daftarLapangan.Add(lap1);
-
             daftarLapangan.Add(lap2);
 
             ScheduleService scheduleService = new ScheduleService();
@@ -95,8 +93,7 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
             // filter
             FilterService filterService = new FilterService();
 
-            foreach (Lapangan lapangan
-                in daftarLapangan)
+            foreach (Lapangan lapangan in daftarLapangan)
             {
                 scheduleService.generateJadwal(lapangan);
             }
@@ -403,7 +400,7 @@ namespace Aplikasi_Reservasi_Lapangan_Badminton
             Console.WriteLine();
             Console.WriteLine("Tekan Enter untuk keluar...");
             Console.ReadLine();
-        }     
+        }
 
         static AuthResponse MenuCustomer(AuthService authService)
         {
